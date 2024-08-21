@@ -40,10 +40,15 @@ if [ ! -f $XAUTH ]; then
   exit 1
 fi
 
+
 docker run \
   -it \
   --rm \
   --runtime=nvidia \
+  --entrypoint bash \
+  --gpus all \
+  -e "ACCEPT_EULA=Y" \
+  -e "PRIVACY_CONSENT=Y" \
   -e DISPLAY \
   -e XAUTHORITY=$XAUTH \
   -e HOME=/home/${USER_NAME} \
@@ -62,7 +67,6 @@ docker run \
   --network host \
   --privileged \
   --security-opt seccomp=unconfined \
-  "${IMG}" \
-  bash
+  "${IMG}"
 
 # -e "TERM=xterm-256color" \

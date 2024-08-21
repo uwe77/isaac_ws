@@ -49,25 +49,15 @@ RUN apt-get -o Acquire::ForceIPv4=true update && apt-get -yq dist-upgrade \
     python3-tk \
     software-properties-common \
     ruby \
-    python3-pip \
-    python3-setuptools \
-    python3-numpy \
-    python3-empy  \
-    python3-opencv \
-    python3-dbg \
-    python3-venv \
-    python3-dev \
-    python3-tk \
-    python3-yaml \
-    libfltk1.3-dev \ 
-    freeglut3-dev \ 
-    libpng-dev \ 
+    libfltk1.3-dev \
+    freeglut3-dev \
+    libpng-dev \
     libjpeg-dev \
-    libxft-dev \ 
-    libxinerama-dev \ 
-    libtiff5-dev \ 
+    libxft-dev \
+    libxinerama-dev \
+    libtiff5-dev \
     librapidxml-dev \
-    netbase \ 
+    netbase \
     fluid \
     xterm \
     scrot \
@@ -78,14 +68,31 @@ RUN apt-get -o Acquire::ForceIPv4=true update && apt-get -yq dist-upgrade \
     qtbase5-dev \
     ifstat \
     iperf3 \
-    && apt-get update && apt-get install -y git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-####################################### pip3 ###########################################
+####################################### Python 3.8.10 ##################################
+# Install Python 3.8.10
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update && apt-get install -y \
+    python3.8 \
+    python3.8-venv \
+    python3.8-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --upgrade pip \
-    && pip3 install \
+# Update the `python3` symlink
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1
+
+# Ensure pip3 is linked correctly to the new Python version
+RUN python3.8 -m ensurepip --upgrade \
+    && python3.8 -m pip install --upgrade pip setuptools wheel
+
+####################################### pip3 ###########################################
+RUN python3.8 -m pip install --upgrade pip \
+    && python3.8 -m pip install \
     matplotlib \
     pandas \
     gdown \
@@ -95,8 +102,8 @@ RUN python3 -m pip install --upgrade pip \
     tensorboard \
     swig
 
-RUN pip3 install --ignore-installed PyYAML \
-    && pip3 install \
+RUN python3.8 -m pip install --ignore-installed PyYAML \
+    && python3.8 -m pip install \
     torch \
     torchaudio \
     torchvision \
@@ -111,6 +118,12 @@ RUN pip3 install --ignore-installed PyYAML \
     hf_transfer \
     opencv-python-headless \
     timm
+
+RUN wget https://developer.nvidia.com/isaac-gym-preview-4 -O /tmp/isaac-gym-preview-4.tar \
+    && tar -xvf /tmp/isaac-gym-preview-4.tar -C /opt/ \
+    && rm /tmp/isaac-gym-preview-4.tar \
+    && cd /opt/isaacgym/python \
+    && pip3 install -e .
 
 
 RUN echo "root ALL=(ALL)  ALL" >> /etc/sudoers
