@@ -93,8 +93,8 @@ RUN apt-get -o Acquire::ForceIPv4=true update && apt-get -yq dist-upgrade && \
     zip \
     unzip \
     make \
-    gcc-8 \
-    g++-8 \
+    gcc-9 \
+    g++-9 \
     vulkan-utils \
     mesa-vulkan-drivers \
     pigz \
@@ -103,9 +103,9 @@ RUN apt-get -o Acquire::ForceIPv4=true update && apt-get -yq dist-upgrade && \
     git-lfs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-# Force gcc 8 to avoid CUDA 10 build issues on newer base OS
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 && \
-    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 8
+# Force gcc 9 to avoid CUDA 10 build issues on newer base OS
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
 
 ################################## python tools #####################################
 RUN python3.8 -m pip install \
@@ -117,7 +117,10 @@ RUN python3.8 -m pip install \
     pytest \
     Pillow \
     tensorboard \
-    swig
+    swig \
+    warp-lang \
+    urdfpy \
+    networkx
 
 ################################## torch gymnasium sb3 #####################################
 RUN python3.8 -m pip install --no-cache-dir --ignore-installed PyYAML \
@@ -153,9 +156,16 @@ USER ${NB_USER}
 ENV PATH="${HOME}/.local/bin:$PATH"
 WORKDIR /opt/isaacgym/python
 RUN pip3 install -q -e .
-ENV NVIDIA_VISIBLE_DEVICES=all NVIDIA_DRIVER_CAPABILITIES=all
+ENV NVIDIA_VISIBLE_DEVICES=all NVIDIA_DRIVER_CAPABILITIES=all \
+    VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
 USER root
-############################################################################
+################################## aerial_gym_simulator #########################
+RUN pip3 install git+https://github.com/mmatl/urdfpy.git
+# Switch to the non-root user
+WORKDIR /opt
+RUN git clone https://github.com/ntnu-arl/aerial_gym_simulator.git && \
+    cd aerial_gym_simulator && \
+    pip3 install -q -e .
 
 
 RUN echo "root ALL=(ALL)  ALL" >> /etc/sudoers \
