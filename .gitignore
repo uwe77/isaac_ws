@@ -1,0 +1,11 @@
+.catkin_tools/
+build/
+devel/
+catkin_ws/logs/
+catkin_ws/src/CMakeLists.txt
+.catkin_workspace
+log
+.vscode/
+__pycache__
+catkin_ws/src/object_detection/model
+bags/
