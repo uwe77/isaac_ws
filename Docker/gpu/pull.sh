@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-REPOSITORY="uwwee/isaac"
-TAG="latest"
+REPOSITORY="uwwee/ubuntu"
+TAG="isaacgym"
 
 IMG="${REPOSITORY}:${TAG}"
 
