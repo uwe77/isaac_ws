@@ -2,14 +2,14 @@
 
 ARGS=("$@")
 
-REPOSITORY="uwwee/isaac"
-TAG="latest"
+REPOSITORY="uwwee/ubuntu"
+TAG="isaacgym"
 
 IMG="${REPOSITORY}:${TAG}"
 
 USER_NAME="uwe"
 REPO_NAME="isaac_ws"
-CONTAINER_NAME="isaac"
+CONTAINER_NAME="isaac_ws"
 
 CONTAINER_ID=$(docker ps -aqf "ancestor=${IMG}")
 if [ $CONTAINER_ID ]; then
@@ -40,21 +40,15 @@ if [ ! -f $XAUTH ]; then
   exit 1
 fi
 
-
 docker run \
   -it \
   --rm \
   --runtime=nvidia \
-  --entrypoint bash \
-  --gpus all \
-  -e "ACCEPT_EULA=Y" \
-  -e "PRIVACY_CONSENT=Y" \
   -e DISPLAY \
   -e XAUTHORITY=$XAUTH \
   -e HOME=/home/${USER_NAME} \
   -e OPENAI_API_KEY=$OPENAI_API_KEY\
   -e NVIDIA_DRIVER_CAPABILITIES=all \
-  -e USER=root \
   -v "$XAUTH:$XAUTH" \
   -v "/home/${USER}/${REPO_NAME}:/home/${USER_NAME}/${REPO_NAME}" \
   -v "/tmp/.X11-unix:/tmp/.X11-unix" \
@@ -67,6 +61,7 @@ docker run \
   --network host \
   --privileged \
   --security-opt seccomp=unconfined \
-  "${IMG}"
+  "${IMG}" \
+  bash
 
 # -e "TERM=xterm-256color" \

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-REPOSITORY="uwwee/isaac"
-TAG="latest"
+REPOSITORY="uwwee/ubuntu"
+TAG="isaacgym"
 
 IMG="${REPOSITORY}:${TAG}"
 
@@ -39,4 +39,4 @@ echo -e "${END_COLOR}"
 echo "=================================================="
 echo "Start building image"
 
-docker buildx build --rm "$@" -f "${DOCKERFILE_PATH}" -t "${IMG}" "${SCRIPT_PATH}" 
+docker buildx build --rm "$@" -f "${DOCKERFILE_PATH}" --load -t "${IMG}" "${SCRIPT_PATH}" 
