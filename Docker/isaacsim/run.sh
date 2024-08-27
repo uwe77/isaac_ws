@@ -9,7 +9,7 @@ IMG="${REPOSITORY}:${TAG}"
 
 USER_NAME="arg"
 REPO_NAME="isaac_ws"
-CONTAINER_NAME="isaacsim_ws"
+CONTAINER_NAME="isaacsim"
 
 CONTAINER_ID=$(docker ps -aqf "ancestor=${IMG}")
 if [ $CONTAINER_ID ]; then
@@ -39,29 +39,26 @@ if [ ! -f $XAUTH ]; then
   exit 1
 fi
 
-docker run \
-  -it \
-  --rm \
-  --gpus all \
-  --runtime=nvidia \
-  -e DISPLAY \
-  -e XAUTHORITY=$XAUTH \
-  -e HOME=/home/${USER_NAME} \
-  -e USER=${USER_NAME} \
-  -e OPENAI_API_KEY=${OPENAI_API_KEY} \
-  -e NVIDIA_DRIVER_CAPABILITIES=all \
-  -e "ACCEPT_EULA=Y" \
-  -e "PRIVACY_CONSENT=Y" \
-  -v "$XAUTH:$XAUTH" \
-  -v "/home/${USER}/${REPO_NAME}:/home/${USER_NAME}/${REPO_NAME}" \
-  -v "/tmp/.X11-unix:/tmp/.X11-unix" \
-  -v "/etc/localtime:/etc/localtime:ro" \
-  -v "/dev:/dev" \
-  -v "/var/run/docker.sock:/var/run/docker.sock" \
-  --workdir "/home/${USER_NAME}/${REPO_NAME}" \
-  --name "${CONTAINER_NAME}" \
-  --network host \
-  --privileged \
-  --security-opt seccomp=unconfined \
-  "${IMG}" \
-  bash
+
+docker run --workdir "/home/${USER_NAME}/${REPO_NAME}" \
+    -it \
+    --rm \
+    --gpus all \
+    --privileged \
+    --network=host \
+    --runtime=nvidia \
+    --entrypoint bash \
+    --name "${CONTAINER_NAME}" \
+    --security-opt seccomp=unconfined \
+    -e "ACCEPT_EULA=Y" \
+    -e USER=${USER_NAME} \
+    -e XAUTHORITY=$XAUTH \
+    -e "PRIVACY_CONSENT=Y" \
+    -e HOME=/home/${USER_NAME} \
+    -e NVIDIA_DRIVER_CAPABILITIES=all \
+    -e OPENAI_API_KEY=${OPENAI_API_KEY} \
+    -v "/dev:/dev" \
+    -v "$XAUTH:$XAUTH" \
+    -v "/var/run/docker.sock:/var/run/docker.sock" \
+    -v "/home/${USER}/${REPO_NAME}:/home/${USER_NAME}/${REPO_NAME}" \
+    "${IMG}"
