@@ -53,7 +53,6 @@ docker run --workdir "/home/${USER_NAME}/${REPO_NAME}" \
     -e "ACCEPT_EULA=Y" \
     -e USER=${USER_NAME} \
     -e XAUTHORITY=$XAUTH \
-    -e "PRIVACY_CONSENT=Y" \
     -e HOME=/home/${USER_NAME} \
     -e NVIDIA_DRIVER_CAPABILITIES=all \
     -e OPENAI_API_KEY=${OPENAI_API_KEY} \
